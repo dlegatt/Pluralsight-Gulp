@@ -115,7 +115,7 @@ gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function () {
 
 gulp.task('optimize', ['inject'], function () {
     log('Optimizing the javascriopt, css, and HTML');
-    var assets = $.useref.assets({searchPath: './'});
+    // var assets = $.useref.assets({searchPath: './'});
     var templateCache = config.temp + config.templateCache.file;
 
     return gulp
@@ -126,9 +126,9 @@ gulp.task('optimize', ['inject'], function () {
                 starttag: '<!-- inject:templates:js -->'
             })
         )
-        .pipe(assets)
-        .pipe(assets.restore())
-        .pipe($.useref())
+        // .pipe(assets)
+        // .pipe(assets.restore())
+        .pipe($.useref({searchPath:'./'}))
         .pipe(gulp.dest(config.build));
 })
 
