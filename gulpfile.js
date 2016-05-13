@@ -113,11 +113,11 @@ gulp.task('inject', ['wiredep', 'styles', 'templatecache'], function () {
         .pipe(gulp.dest(config.client));
 });
 
-gulp.task('optimize', ['inject'], function () {
-    log('Optimizing the javascriopt, css, and HTML');
-    // var assets = $.useref.assets({searchPath: './'});
+gulp.task('optimize', ['inject', 'fonts','images'], function () {
+    log('Optimizing the javascript, css, and HTML');
+    // var assets = $.useref.assets({searchPath: './'});  for useref < 3
     var templateCache = config.temp + config.templateCache.file;
-
+    // var cssFilter = $.filter('**/*.css',{restore: true});
     return gulp
         .src(config.index)
         .pipe($.plumber())
@@ -126,16 +126,20 @@ gulp.task('optimize', ['inject'], function () {
                 starttag: '<!-- inject:templates:js -->'
             })
         )
-        // .pipe(assets)
-        // .pipe(assets.restore())
         .pipe($.useref({searchPath:'./'}))
+        // .pipe($.gulpif('*.css',cssFilter)
+        .pipe($.if('*.css',$.csso()))
+        .pipe($.if('*.js',$.uglify()))
+        // .pipe(cssFilter.restore)
+        // .pipe(assets)  for useref < 3
+        // .pipe(assets.restore())  for useref < 3
         .pipe(gulp.dest(config.build));
 })
 
 gulp.task('serve-build', ['optimize'], function () {
-   serve(false); 
+    serve(false);
 });
-    
+
 gulp.task('serve-dev', ['inject'], function () {
     serve(true);
 });
@@ -201,10 +205,11 @@ function startBrowserSync(isDev) {
 
     log('Starting browser-sync on port ' + port);
 
-    if(isDev) {
+    if (isDev) {
         gulp.watch([config.less], ['styles'])
         .on('change', function (event) { changeEvent(event); });
     } else {
+        console.log('build mode starting browser-sync');
         gulp.watch([config.less, config.js, config.html], ['optimize', browserSync.reload])
             .on('change', function (event) { changeEvent(event); });
     }

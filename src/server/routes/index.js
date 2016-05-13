@@ -5,6 +5,7 @@ module.exports = function(app) {
 
     app.get(api + '/customer/:id', getCustomer);
     app.get(api + '/customers', getCustomers);
+    app.get(api + '/ip', getIpAddr);
 
     function getCustomer(req, res, next) {
         var json = jsonfileservice.getJsonFromFile(data + 'customers.json');
@@ -17,5 +18,12 @@ module.exports = function(app) {
     function getCustomers(req, res, next) {
         var json = jsonfileservice.getJsonFromFile(data + 'customers.json');
         res.send(json);
+    }
+
+    function getIpAddr(req, res, next) {
+        var addr = {
+            ipAddress: req.connection.remoteAddress
+        };
+        res.send(JSON.stringify(addr));
     }
 };
